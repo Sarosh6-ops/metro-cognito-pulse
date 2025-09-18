@@ -1,14 +1,52 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import LoginPage from "@/components/LoginPage";
+import Dashboard from "@/components/Dashboard";
+import ChatHub from "@/components/ChatHub";
+
+interface User {
+  name: string;
+  email: string;
+  employeeId: string;
+}
+
+type AppState = 'login' | 'dashboard' | 'chat';
 
 const Index = () => {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
-  );
+  const [currentState, setCurrentState] = useState<AppState>('login');
+  const [user, setUser] = useState<User | null>(null);
+
+  const handleLogin = (userData: User) => {
+    setUser(userData);
+    setCurrentState('dashboard');
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    setCurrentState('login');
+  };
+
+  const handleNavigateToChat = () => {
+    setCurrentState('chat');
+  };
+
+  const handleBackToDashboard = () => {
+    setCurrentState('dashboard');
+  };
+
+  if (currentState === 'login') {
+    return <LoginPage onLogin={handleLogin} />;
+  }
+
+  if (currentState === 'chat' && user) {
+    return <ChatHub user={user} onBack={handleBackToDashboard} />;
+  }
+
+  if (user) {
+    return <Dashboard user={user} onLogout={handleLogout} onNavigateToChat={handleNavigateToChat} />;
+  }
+
+  // Fallback
+  return <LoginPage onLogin={handleLogin} />;
 };
 
 export default Index;
